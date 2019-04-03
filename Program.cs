@@ -31,7 +31,7 @@ namespace aotprofiletool {
 				  v => help = v != null },
 				{ "a|all",
 					"Show modules, types and methods in the profile",
-				  v => { Modules = true; Types = true; Methods = true; } },
+				  v => Modules = Types = Methods = true },
 				{ "d|modules",
 					"Show modules in the profile",
 				  v => Modules = true },
@@ -47,6 +47,8 @@ namespace aotprofiletool {
 				{ "v|verbose",
 					"Output information about progress during the run of the tool",
 				  v => Verbose = true },
+				"",
+				"If no other option than -v is used then --all is used by default"
 			};
 
 			var remaining = options.Parse (args);
@@ -72,6 +74,10 @@ namespace aotprofiletool {
 			if (!File.Exists (path)) {
 				Error ($"'{path}' doesn't exist.");
 				Environment.Exit (3);
+			}
+
+			if (args.Length == 1 || (args.Length == 2 && Verbose)) {
+				Modules = Types = Methods = true;
 			}
 
 			var reader = new ProfileReader ();
