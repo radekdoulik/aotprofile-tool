@@ -6,7 +6,7 @@ using System.Text;
 namespace Mono.Profiler.Aot {
 	//
 	// Read the contents of a .aotprofile created by the AOT profiler
-	// See mono-profiler-aot.h for a description of the file format
+	// See mono/profiler/aot.h for a description of the file format
 	//
 	public class ProfileReader {
 

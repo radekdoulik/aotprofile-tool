@@ -7,9 +7,13 @@ using static System.Console;
 
 namespace aotprofiletool {
 	class MainClass {
-		static bool Verbose;
-		static bool Summary;
 		static readonly string Name = "aotprofile-tool";
+
+		static bool Methods;
+		static bool Modules;
+		static bool Summary;
+		static bool Types;
+		static bool Verbose;
 
 		static string ProcessArguments (string [] args)
 		{
@@ -25,9 +29,21 @@ namespace aotprofiletool {
 				{ "h|help|?",
 					"Show this message and exit",
 				  v => help = v != null },
+				{ "a|all",
+					"Show modules, types and methods in the profile",
+				  v => { Modules = true; Types = true; Methods = true; } },
+				{ "d|modules",
+					"Show modules in the profile",
+				  v => Modules = true },
+				{ "m|methods",
+					"Show methods in the profile",
+				  v => Methods = true },
 				{ "s|summary",
-					"Show summary of profile",
+					"Show summary of the profile",
 				  v => Summary = true },
+				{ "t|types",
+					"Show types in the profile",
+				  v => Types = true },
 				{ "v|verbose",
 					"Output information about progress during the run of the tool",
 				  v => Verbose = true },
@@ -52,6 +68,12 @@ namespace aotprofiletool {
 		public static void Main (string [] args)
 		{
 			var path = ProcessArguments (args);
+
+			if (!File.Exists (path)) {
+				Error ($"'{path}' doesn't exist.");
+				Environment.Exit (3);
+			}
+
 			var reader = new ProfileReader ();
 			ProfileData pd;
 
@@ -62,11 +84,29 @@ namespace aotprofiletool {
 				pd = reader.Read (stream);
 			}
 
+			if (Modules) {
+				ColorWriteLine ($"Modules:", ConsoleColor.Green);
+				foreach (var module in pd.Modules)
+					WriteLine ($"\t{module.Mvid} {module}");
+			}
+
+			if (Types) {
+				ColorWriteLine ($"Types:", ConsoleColor.Green);
+				foreach (var type in pd.Types)
+					WriteLine ($"\t{type}");
+			}
+
+			if (Methods) {
+				ColorWriteLine ($"Methods:", ConsoleColor.Green);
+				foreach (var method in pd.Methods)
+					WriteLine ($"\t{method}");
+			}
+
 			if (Summary) {
 				ColorWriteLine ($"Summary:", ConsoleColor.Green);
-				WriteLine ($"\tmodules: {pd.Modules.Count}");
-				WriteLine ($"\ttypes:   {pd.Types.Count}");
-				WriteLine ($"\tmethods: {pd.Methods.Count}");
+				WriteLine ($"\tModules: {pd.Modules.Count.ToString ("N0"),10}");
+				WriteLine ($"\tTypes:   {pd.Types.Count.ToString ("N0"),10}");
+				WriteLine ($"\tMethods: {pd.Methods.Count.ToString ("N0"),10}");
 			}
 		}
 
