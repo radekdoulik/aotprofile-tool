@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using Mono.Options;
 using Mono.Profiler.Aot;
 
@@ -14,6 +15,10 @@ namespace aotprofiletool {
 		static bool Summary;
 		static bool Types;
 		static bool Verbose;
+
+		static Regex FilterMethod;
+		static Regex FilterModule;
+		static Regex FilterType;
 
 		static string ProcessArguments (string [] args)
 		{
@@ -35,6 +40,15 @@ namespace aotprofiletool {
 				{ "d|modules",
 					"Show modules in the profile",
 				  v => Modules = true },
+				{ "filter-method=",
+					"Filter by method with regex VALUE",
+				  v => FilterMethod = new Regex (v) },
+				{ "filter-module=",
+					"Filter by module with regex VALUE",
+				  v => FilterModule = new Regex (v) },
+				{ "filter-type=",
+					"Filter by type with regex VALUE",
+				  v => FilterType = new Regex (v) },
 				{ "m|methods",
 					"Show methods in the profile",
 				  v => Methods = true },
@@ -90,29 +104,94 @@ namespace aotprofiletool {
 				pd = reader.Read (stream);
 			}
 
-			if (Modules) {
+
+
+			if (Modules)
 				ColorWriteLine ($"Modules:", ConsoleColor.Green);
-				foreach (var module in pd.Modules)
+
+			int modules = FilterModule == null ? pd.Modules.Count : 0;
+
+			foreach (var module in pd.Modules) {
+				if (FilterModule != null) {
+					var match = FilterModule.Match (module.Name);
+
+					if (!match.Success)
+						continue;
+
+					modules++;
+				}
+
+				if (Modules)
 					WriteLine ($"\t{module.Mvid} {module}");
 			}
 
-			if (Types) {
+			if (Types)
 				ColorWriteLine ($"Types:", ConsoleColor.Green);
-				foreach (var type in pd.Types)
+
+			int types = (FilterType == null && FilterModule == null) ? pd.Types.Count : 0;
+
+			foreach (var type in pd.Types) {
+				if (FilterModule != null) {
+					var match = FilterModule.Match (type.Module.Name);
+
+					if (!match.Success)
+						continue;
+				}
+
+				if (FilterType != null) {
+					var match = FilterType.Match (type.FullName);
+
+					if (!match.Success)
+						continue;
+				}
+
+				if (FilterType != null || FilterModule != null)
+					types++;
+
+				if (Types)
 					WriteLine ($"\t{type}");
 			}
 
-			if (Methods) {
+			if (Methods)
 				ColorWriteLine ($"Methods:", ConsoleColor.Green);
-				foreach (var method in pd.Methods)
+
+			int methods = (FilterMethod == null && FilterType == null && FilterModule == null) ? pd.Methods.Count : 0;
+
+			foreach (var method in pd.Methods) {
+
+				if (FilterModule != null) {
+					var match = FilterModule.Match (method.Type.Module.ToString ());
+
+					if (!match.Success)
+						continue;
+				}
+
+				if (FilterType != null) {
+					var match = FilterType.Match (method.Type.ToString ());
+
+					if (!match.Success)
+						continue;
+				}
+
+				if (FilterMethod != null) {
+					var match = FilterMethod.Match (method.ToString ());
+
+					if (!match.Success)
+						continue;
+				}
+
+				if (FilterMethod != null || FilterType != null || FilterModule != null)
+					methods++;
+
+				if (Methods)
 					WriteLine ($"\t{method}");
 			}
 
 			if (Summary) {
 				ColorWriteLine ($"Summary:", ConsoleColor.Green);
-				WriteLine ($"\tModules: {pd.Modules.Count.ToString ("N0"),10}");
-				WriteLine ($"\tTypes:   {pd.Types.Count.ToString ("N0"),10}");
-				WriteLine ($"\tMethods: {pd.Methods.Count.ToString ("N0"),10}");
+				WriteLine ($"\tModules: {modules.ToString ("N0"),10}");
+				WriteLine ($"\tTypes:   {types.ToString ("N0"),10}");
+				WriteLine ($"\tMethods: {methods.ToString ("N0"),10}");
 			}
 		}
 

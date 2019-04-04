@@ -88,20 +88,26 @@ namespace Mono.Profiler.Aot {
 			get; set;
 		}
 
+		public string FullName {
+			get {
+				string prefix;
+
+				if (Name.Length > 0 && Name [0] == '.')
+					prefix = Module.ToString ();
+				else
+					prefix = "";
+
+				return $"{prefix}{Name}{GenericInst}";
+			}
+		}
+
 		public GenericInstRecord GenericInst {
 			get; set;
 		}
 
 		public override string ToString ()
 		{
-			string prefix;
-
-			if (Name.Length > 0 && Name [0] == '.')
-				prefix = Module.ToString ();
-			else
-				prefix = "";
-
-			return $"{prefix}{Name}{GenericInst}";
+			return FullName;
 		}
 	}
 
