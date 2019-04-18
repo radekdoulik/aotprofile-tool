@@ -171,9 +171,9 @@ namespace aotprofiletool {
 
 			if (Summary) {
 				ColorWriteLine ($"Summary:", ConsoleColor.Green);
-				WriteLine ($"\tModules: {modules.Count.ToString ("N0"),10}");
-				WriteLine ($"\tTypes:   {types.Count.ToString ("N0"),10}");
-				WriteLine ($"\tMethods: {methods.Count.ToString ("N0"),10}");
+				WriteLine ($"\tModules: {modules.Count.ToString ("N0"),10}{(modules.Count != pd.Modules.Count ? $"  (of {pd.Modules.Count})" : "" )}");
+				WriteLine ($"\tTypes:   {types.Count.ToString ("N0"),10}{(types.Count != pd.Types.Count ? $"  (of {pd.Types.Count})" : "")}");
+				WriteLine ($"\tMethods: {methods.Count.ToString ("N0"),10}{(methods.Count != pd.Methods.Count ? $"  (of {pd.Methods.Count})" : "")}");
 			}
 		}
 
