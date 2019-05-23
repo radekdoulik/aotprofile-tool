@@ -148,6 +148,20 @@ namespace aotprofiletool {
 				}
 			}
 
+			if (FilterMethod == null && FilterType != null) {
+				foreach (var type in pd.Types) {
+					if (types.Contains (type))
+						continue;
+
+					var match = FilterType.Match (type.ToString ());
+
+					if (!match.Success)
+						continue;
+
+					types.Add (type);
+				}
+			}
+
 			if (Modules) {
 				ColorWriteLine ($"Modules:", ConsoleColor.Green);
 
