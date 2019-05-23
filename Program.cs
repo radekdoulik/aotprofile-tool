@@ -140,11 +140,9 @@ namespace aotprofiletool {
 							continue;
 					}
 
-					if (FilterMethod != null || FilterType != null || FilterModule != null) {
-						methods.Add (method);
-						types.Add (type);
-						modules.Add (module);
-					}
+					methods.Add (method);
+					types.Add (type);
+					modules.Add (module);
 				}
 			}
 
