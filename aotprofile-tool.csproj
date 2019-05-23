@@ -41,6 +41,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProfileData.cs" />
     <Compile Include="ProfileReader.cs" />
+    <Compile Include="ProfileBase.cs" />
+    <Compile Include="ProfileWriter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

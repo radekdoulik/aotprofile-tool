@@ -21,6 +21,8 @@ namespace aotprofiletool {
 		static Regex FilterModule;
 		static Regex FilterType;
 
+		static string Output;
+
 		static string ProcessArguments (string [] args)
 		{
 			var help = false;
@@ -53,6 +55,9 @@ namespace aotprofiletool {
 				{ "m|methods",
 					"Show methods in the profile",
 				  v => Methods = true },
+				{ "o|output=",
+					"Write profile to OUTPUT file",
+				  v => Output = v },
 				{ "s|summary",
 					"Show summary of the profile",
 				  v => Summary = true },
@@ -186,6 +191,16 @@ namespace aotprofiletool {
 				WriteLine ($"\tModules: {modules.Count.ToString ("N0"),10}{(modules.Count != pd.Modules.Count ? $"  (of {pd.Modules.Count})" : "" )}");
 				WriteLine ($"\tTypes:   {types.Count.ToString ("N0"),10}{(types.Count != pd.Types.Count ? $"  (of {pd.Types.Count})" : "")}");
 				WriteLine ($"\tMethods: {methods.Count.ToString ("N0"),10}{(methods.Count != pd.Methods.Count ? $"  (of {pd.Methods.Count})" : "")}");
+			}
+
+			if (!string.IsNullOrEmpty (Output)) {
+				if (Verbose)
+					ColorWriteLine ($"Going to write the profile to '{Output}'", ConsoleColor.Yellow);
+
+				using (var stream = new FileStream (Output, FileMode.Create)) {
+					var writer = new ProfileWriter (stream, pd);
+					writer.Write ();
+				}
 			}
 		}
 
