@@ -1,8 +1,3 @@
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Text;
-
 namespace Mono.Profiler.Aot {
 	public abstract class ProfileBase {
 

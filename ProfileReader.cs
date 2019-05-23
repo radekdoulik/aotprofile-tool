@@ -20,20 +20,22 @@ namespace Mono.Profiler.Aot {
 			return res;
 		}
 
-		unsafe int GetInt32 (byte [] data, int index)
+		unsafe int GetInt32 (byte [] intData, int index)
 		{
-			if (data == null)
-				throw new ArgumentNullException ("data");
-			if (data.Length - index < 4)
-				throw new ArgumentException ("index");
+			if (intData == null)
+				throw new ArgumentNullException (nameof (intData));
+
+			if (intData.Length - index < 4)
+				throw new ArgumentException (nameof (index));
+
 			if (index < 0)
-				throw new ArgumentException ("index");
+				throw new ArgumentException (nameof (index));
 
 			int ret;
 			byte* b = (byte*)&ret;
 
 			for (int i = 0; i < 4; i++)
-				b [i] = data [index + i];
+				b [i] = intData [index + i];
 
 			return ret;
 		}
