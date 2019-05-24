@@ -197,8 +197,10 @@ namespace aotprofiletool {
 				if (Verbose)
 					ColorWriteLine ($"Going to write the profile to '{Output}'", ConsoleColor.Yellow);
 
+				var updatedPD = new ProfileData (new List<ModuleRecord>(modules), new List<TypeRecord> (types), methods);
+
 				using (var stream = new FileStream (Output, FileMode.Create)) {
-					var writer = new ProfileWriter (stream, pd);
+					var writer = new ProfileWriter (stream, updatedPD);
 					writer.Write ();
 				}
 			}

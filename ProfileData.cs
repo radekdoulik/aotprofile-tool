@@ -147,15 +147,22 @@ namespace Mono.Profiler.Aot {
 	}
 
 	public class ProfileData {
-		List<ModuleRecord> modules;
-		List<TypeRecord> types;
-		List<MethodRecord> methods;
+		readonly List<ModuleRecord> modules;
+		readonly List<TypeRecord> types;
+		readonly List<MethodRecord> methods;
 
 		internal ProfileData ()
 		{
 			modules = new List<ModuleRecord> ();
 			types = new List<TypeRecord> ();
 			methods = new List<MethodRecord> ();
+		}
+
+		internal ProfileData (List<ModuleRecord> modules, List<TypeRecord> types, List<MethodRecord> methods)
+		{
+			this.modules = modules;
+			this.types = types;
+			this.methods = methods;
 		}
 
 		public List<ModuleRecord> Modules {
